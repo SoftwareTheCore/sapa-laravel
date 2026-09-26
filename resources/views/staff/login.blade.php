@@ -3,14 +3,14 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="icon" type="image/png" href="{{ asset('images/logosapa.png') }}">
+	<link rel="icon" type="image/png" href="{{ asset('images/sapalogo.png') }}">
 	<title>Portal Petugas | SAPA</title>
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="staff-login-page">
 	<header class="staff-login-header">
 		<a class="brand" href="{{ url('/') }}">
-			<img class="brand-logo" src="{{ asset('images/logosapa.png') }}" alt="SAPA - Sistem Aspirasi dan Pengaduan Masyarakat">
+			<img class="brand-logo" src="{{ asset('images/sapalogo.png') }}" alt="SAPA - Sistem Aspirasi dan Pengaduan Masyarakat">
 		</a>
 		<a class="citizen-back" href="{{ url('/') }}">&larr; Kembali ke layanan warga</a>
 	</header>
