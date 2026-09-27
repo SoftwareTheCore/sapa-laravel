@@ -22,6 +22,7 @@ SAPA adalah platform digital (berbasis Laravel) untuk kelurahan yang memungkinka
 - **Backend**: Laravel 10.x, PHP 8.x, MySQL
 - **Frontend**: Blade Templating, Vanilla CSS (Custom Design System), JavaScript
 - **AI Engine**: Langflow (REST API via `ChatbotController` Laravel Proxy)
+- **IBM Bob IDE**
 
 ---
 
