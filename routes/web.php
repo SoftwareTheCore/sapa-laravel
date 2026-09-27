@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ChatbotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,8 @@ use App\Http\Controllers\StaffController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/api/chat', [ChatbotController::class, 'chat'])->name('api.chat');
 
 Route::get('/laporan-cepat', function () {
     return app(ReportController::class)->create();

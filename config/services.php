@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'langflow' => [
+        'url' => env('LANGFLOW_BASE_URL', 'http://127.0.0.1:7860'),
+        'flow_id' => env('LANGFLOW_FLOW_ID', '6e10128d-eb36-42f5-8aed-d894f30327fa'),
+        'api_key' => env('LANGFLOW_API_KEY', 'YOUR_API_KEY_HERE'),
+    ],
+
 ];

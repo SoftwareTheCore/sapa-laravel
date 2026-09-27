@@ -22,3 +22,214 @@
 @media (max-width: 760px) { .hero-logo-panel { width: min(310px, 86vw); }.hero-logo-panel::before { inset: 16px; }.hero-logo-caption { margin-top: 16px; font-size: 11px; } }
 .company-profile-section { width: 100%; padding: 88px 24px; color: #fff; background: var(--green-dark); overflow: hidden; }.company-profile-inner { display: grid; grid-template-columns: minmax(280px, .85fr) minmax(0, 1.15fr); align-items: center; gap: clamp(48px, 8vw, 120px); width: min(1160px, 100%); margin: auto; }.company-profile-visual { position: relative; display: grid; place-items: center; min-height: 310px; padding: 38px; background: #f8fbf4; border-radius: 4px 54px 4px 54px; transform: rotate(-2deg); }.company-profile-visual::before { position: absolute; inset: 14px; border: 1px solid #b8dabe; border-radius: 2px 42px 2px 42px; content: ''; }.company-profile-rule { position: absolute; top: 32px; left: 38px; width: 44px; height: 4px; background: var(--blue); }.company-profile-logo { position: relative; z-index: 1; display: block; width: min(270px, 78%); max-height: 190px; object-fit: contain; }.company-profile-stamp { position: absolute; right: 30px; bottom: 26px; color: var(--green-dark); font-size: 9px; font-weight: 800; letter-spacing: .14em; writing-mode: vertical-rl; }.company-profile-copy { max-width: 620px; }.company-profile-copy .eyebrow { color: #b9e2bf; }.company-profile-copy h2 { max-width: 580px; margin: 0 0 22px; color: #fff; font: 800 clamp(30px, 4vw, 48px)/1.13 'Plus Jakarta Sans'; letter-spacing: -.03em; }.company-profile-lead { max-width: 560px; margin: 0 0 13px; color: #e6f2e6; font-size: 17px; line-height: 1.7; }.company-profile-detail { max-width: 550px; margin: 0; color: #b9d0bd; font-size: 13px; line-height: 1.75; }.company-profile-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 32px 0 29px; padding: 20px 0; border-top: 1px solid #ffffff2b; border-bottom: 1px solid #ffffff2b; }.company-profile-facts div { display: grid; gap: 7px; }.company-profile-facts strong { color: #9cd9a5; font: 800 12px 'Plus Jakarta Sans'; }.company-profile-facts span { color: #e6f2e6; font-size: 11px; line-height: 1.45; }.company-profile-link { display: inline-flex; align-items: center; gap: 14px; color: #fff; border-bottom: 1px solid #9cd9a5; padding-bottom: 5px; font-size: 13px; font-weight: 700; }.company-profile-link span { color: #9cd9a5; font-size: 20px; }
 @media (max-width: 760px) { .company-profile-section { padding: 62px 16px; }.company-profile-inner { grid-template-columns: 1fr; gap: 48px; width: min(100%, 560px); }.company-profile-visual { min-height: 240px; }.company-profile-logo { width: min(220px, 78%); max-height: 145px; }.company-profile-copy h2 { font-size: 34px; }.company-profile-lead { font-size: 15px; }.company-profile-facts { gap: 12px; }.company-profile-facts span { font-size: 10px; } }
+
+/* ================================================================
+   SAPA AI CHATBOT BUBBLE — widget chat langflow
+   ================================================================ */
+
+/* Tombol bubble mengambang */
+#sapa-chat-bubble {
+    position: fixed !important;
+    bottom: 28px !important;
+    right: 28px !important;
+    z-index: 999999 !important;
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 8px 28px #267a4540;
+    cursor: pointer;
+    transition: transform .18s, box-shadow .18s;
+    outline-offset: 3px;
+    pointer-events: auto;
+}
+#sapa-chat-bubble:hover { transform: scale(1.09); box-shadow: 0 12px 36px #267a4560; }
+#sapa-chat-bubble:focus-visible { outline: 2px solid var(--green); }
+.chat-bubble-icon { font-size: 26px; line-height: 1; }
+
+/* Titik notifikasi merah */
+#sapa-chat-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 2px solid var(--cream);
+    background: #e03b3b;
+}
+
+/* Jendela chat */
+#sapa-chat-window {
+    position: fixed !important;
+    bottom: 98px !important;
+    right: 28px !important;
+    z-index: 999998 !important;
+    display: none;
+    flex-direction: column;
+    width: min(380px, calc(100vw - 24px));
+    height: min(520px, calc(100vh - 140px));
+    border: 1px solid #c9ddce;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 24px 72px #1d55301e;
+    overflow: hidden;
+    pointer-events: auto;
+}
+#sapa-chat-window.is-open {
+    display: flex;
+    animation: chatSlideIn .22s ease;
+}
+@keyframes chatSlideIn {
+    from { opacity: 0; transform: translateY(14px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* Header jendela */
+.chat-window-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--green);
+    color: #fff;
+    flex-shrink: 0;
+}
+.chat-window-identity { display: flex; align-items: center; gap: 10px; }
+.chat-window-avatar {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff30;
+    font-size: 19px;
+    flex-shrink: 0;
+}
+.chat-window-identity strong { display: block; font-size: 13px; font-weight: 700; }
+.chat-window-identity span { display: block; color: #c2e8c7; font-size: 10px; margin-top: 1px; }
+#sapa-chat-status { color: #c2e8c7; font-size: 10px; }
+.chat-window-close {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 50%;
+    background: #ffffff25;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .15s;
+}
+.chat-window-close:hover { background: #ffffff45; }
+
+/* Area pesan */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #f7f9f7;
+    scroll-behavior: smooth;
+}
+.chat-msg {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+.chat-msg-user { flex-direction: row-reverse; }
+.msg-avatar {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e5f3e6;
+    font-size: 15px;
+}
+.msg-bubble {
+    max-width: 82%;
+    padding: 10px 13px;
+    border-radius: 14px 14px 14px 3px;
+    background: #fff;
+    border: 1px solid #dce7df;
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.6;
+}
+.msg-bubble-user {
+    border-radius: 14px 14px 3px 14px;
+    background: var(--green);
+    border-color: transparent;
+    color: #fff;
+}
+.msg-bubble em { color: var(--green); font-style: normal; }
+
+/* Animasi titik mengetik */
+.typing-dots { display: flex; align-items: center; gap: 5px; padding: 12px 14px; }
+.typing-dots span {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #9ab8a4;
+    animation: typingBounce 1.1s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2) { animation-delay: .18s; }
+.typing-dots span:nth-child(3) { animation-delay: .36s; }
+@keyframes typingBounce {
+    0%, 80%, 100% { transform: scale(1); opacity: .5; }
+    40%            { transform: scale(1.3); opacity: 1; }
+}
+
+/* Baris input */
+.chat-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 12px;
+    border-top: 1px solid var(--line);
+    background: #fff;
+    flex-shrink: 0;
+}
+.chat-input {
+    flex: 1;
+    border: 1px solid #d3e0d8;
+    border-radius: 20px;
+    padding: 9px 14px;
+    font: 400 13px 'DM Sans', sans-serif;
+    color: var(--ink);
+    background: #f7f9f7;
+    outline: none;
+    transition: border-color .15s;
+}
+.chat-input:focus { border-color: var(--green); background: #fff; }
+.chat-send-btn {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+}
+.chat-send-btn:hover { background: var(--green-dark); transform: scale(1.07); }
+.chat-send-btn:disabled { background: #b6caba; cursor: not-allowed; transform: none; }
+
+/* Responsif mobile */
+@media (max-width: 480px) {
+    #sapa-chat-bubble { bottom: 18px !important; right: 16px !important; width: 52px; height: 52px; }
+    #sapa-chat-window { bottom: 82px !important; right: 0 !important; left: 0; width: 100%; border-radius: 18px 18px 0 0; height: min(520px, calc(100vh - 100px)); }
+}
