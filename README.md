@@ -1,66 +1,111 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏛️ SAPA - Sistem Aspirasi & Pengaduan Masyarakat
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+SAPA adalah platform digital (berbasis Laravel) untuk kelurahan yang memungkinkan warga menyampaikan laporan, keluhan, dan aspirasi secara langsung, cepat, dan transparan. Proyek ini dilengkapi dengan integrasi **AI Chatbot (SAPA AI)** bertenaga **Langflow**, yang mempermudah warga dalam mencari informasi dan melacak status laporan.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **📝 Laporan Cepat Tanpa Login**: Warga dapat membuat laporan lingkungan tanpa proses pendaftaran yang berbelit-belit.
+- **🔍 Pelacakan Status Real-time**: Warga mendapatkan kode tiket unik (misal: `SAPA-AB12CD34`) untuk melacak proses penanganan.
+- **🤖 SAPA AI Chatbot (Langflow Integration)**: Asisten cerdas di dalam website untuk menjawab FAQ, memberi tahu cara melapor, dan mengecek status tiket.
+- **⚡ Token-Optimized AI Integration**: 
+  - *Local Fast-Path*: Sapaan dasar (halo, terima kasih) dan cek kode tiket diproses 100% lokal oleh sistem tanpa memotong kuota token LLM.
+  - *Caching*: Menghindari query identik berulang ke server AI.
+  - *Proxy Security*: API Key aman disembunyikan di backend Laravel.
+- **👮 Portal Petugas**: Dasbor untuk perangkat kelurahan untuk mengelola, memperbarui status, dan memberi catatan pada laporan warga.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Teknologi yang Digunakan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Backend**: Laravel 10.x, PHP 8.x, MySQL
+- **Frontend**: Blade Templating, Vanilla CSS (Custom Design System), JavaScript
+- **AI Engine**: Langflow (REST API via `ChatbotController` Laravel Proxy)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Panduan Instalasi (Local Development)
 
-## Laravel Sponsors
+### 1. Kebutuhan Sistem
+Pastikan sistem Anda telah menginstal:
+- PHP >= 8.1
+- Composer
+- MySQL / MariaDB
+- Node.js & NPM
+- [Langflow](https://github.com/langflow-ai/langflow) (Untuk fitur SAPA AI)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### 2. Kloning & Setup Proyek
+```bash
+git clone https://github.com/username/sapa-laravel.git
+cd sapa-laravel
 
-### Premium Partners
+# Install dependensi PHP & Node
+composer install
+npm install
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+# Buat file konfigurasi environment
+cp .env.example .env
 
-## Contributing
+# Generate application key
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Konfigurasi Database & AI (.env)
+Buka file `.env` lalu sesuaikan koneksi database MySQL Anda:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=db_sapa
+DB_USERNAME=root
+DB_PASSWORD=
+```
+Tambahkan juga kredensial Langflow Anda di bagian bawah file `.env`:
+```env
+LANGFLOW_BASE_URL=http://127.0.0.1:7860
+LANGFLOW_FLOW_ID=masukkan-flow-id-langflow-anda
+LANGFLOW_API_KEY=YOUR_API_KEY_HERE
+```
 
-## Code of Conduct
+### 4. Migrasi & Build
+```bash
+# Jalankan migrasi database
+php artisan migrate
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Build asset frontend (CSS/JS)
+npm run build
+```
 
-## Security Vulnerabilities
+### 5. Jalankan Aplikasi
+```bash
+# Terminal 1: Laravel Server
+php artisan serve
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Terminal 2: Langflow Server (Pastikan terinstall)
+langflow run
+```
+Akses aplikasi melalui browser di: `http://localhost:8000`
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 💡 Arsitektur Integrasi SAPA AI (Langflow)
+
+Integrasi Chatbot pada proyek ini **tidak menggunakan MCP** langsung di frontend, melainkan menggunakan **REST API Proxy** melalui Laravel.
+
+1. **Frontend Request**: JS di `welcome.blade.php` menangkap ketikan user.
+2. **Laravel Proxy (`ChatbotController`)**:
+   - Jika pesan berisi sapaan sederhana atau cek resi (`SAPA-XXXXX`), Laravel langsung membalas (*Fast Path* -> 0 Token LLM).
+   - Jika tidak, request diteruskan ke Langflow endpoint `/api/v1/run/{flow_id}` beserta `x-api-key`.
+3. **Langflow Server**: Memproses AI logic dan mengembalikan JSON.
+4. **Frontend Response**: Pesan di-render dengan format HTML (mendukung cetak tebal & baris baru).
+
+---
+
+## 🛡️ Keamanan & Optimasi
+- **CORS Aman & API Key Tersembunyi**: Browser tidak pernah mengirim kunci API langsung ke server Langflow.
+- **CSRF Protected**: Pengiriman pesan dari web dilindungi dengan verifikasi token standar Laravel.
+- **Prompt Compression**: Spasi berlebih dikompres dan input dibatasi maksimal 500 karakter untuk menghemat _API Calls_ AI.
+
+---
+*Dibuat untuk mendekatkan jarak antara Warga dan Perangkat Kelurahan.*
