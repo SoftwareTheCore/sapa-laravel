@@ -97,17 +97,65 @@
             <div class="chat-msg chat-msg-bot">
                 <span class="msg-avatar">&#129302;</span>
                 <div class="msg-bubble">Halo! Saya <b>SAPA AI</b>. Ada yang bisa saya bantu hari ini?<br><br>
-                Anda bisa tanya:<br>
-                &bull; Status laporan (contoh: <em>cek SAPA-AB12CD34</em>)<br>
-                &bull; FAQ & cara membuat laporan<br>
-                &bull; Buat laporan baru via chat</div>
+                Anda bisa:<br>
+                &bull; Ketik <b>"lapor"</b> untuk buat laporan baru<br>
+                &bull; Cek status laporan (contoh: <em>SAPA-AB12CD34</em>)<br>
+                &bull; Tanya seputar layanan kelurahan</div>
             </div>
+        </div>
+        <div id="sapa-report-indicator" class="chat-report-indicator" hidden>
+            <span class="report-indicator-dot"></span>
+            <span>Mode Laporan Aktif</span>
+            <button id="sapa-cancel-report" class="report-cancel-btn" title="Batalkan laporan">&#10005;</button>
         </div>
         <div class="chat-input-row">
             <input type="text" id="sapa-chat-input" class="chat-input" placeholder="Ketik pesan..." autocomplete="off" maxlength="500" />
             <button class="chat-send-btn" id="sapa-chat-send" aria-label="Kirim pesan">&#10148;</button>
         </div>
     </div>
+
+    <style>
+        /* Report mode indicator bar */
+        .chat-report-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: linear-gradient(90deg, #1a5c2e 0%, #267a45 100%);
+            color: #d4f5e0;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .chat-report-indicator[hidden] { display: none; }
+        .report-indicator-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: reportPulse 1.5s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        @keyframes reportPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(74, 222, 128, 0); }
+        }
+        .report-cancel-btn {
+            margin-left: auto;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            color: #fca5a5;
+            width: 22px; height: 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        .report-cancel-btn:hover { background: rgba(255,80,80,0.3); color: #fff; }
+    </style>
 
     <script>
     (function () {
@@ -119,6 +167,8 @@
         var LANGFLOW_FLOW_ID  = '6e10128d-eb36-42f5-8aed-d894f30327fa';
         var LANGFLOW_API_KEY  = 'YOUR_API_KEY_HERE';
         // ──────────────────────────────────────────────
+
+        var isInReportFlow = false;
 
         // Inisialisasi Session ID (menggunakan crypto.randomUUID() jika tersedia)
         function getSessionId() {
@@ -137,14 +187,28 @@
 
         var SESSION_ID = getSessionId();
 
-        var bubble   = document.getElementById('sapa-chat-bubble');
-        var chatWin  = document.getElementById('sapa-chat-window');
-        var closeBtn = document.getElementById('sapa-chat-close');
-        var input    = document.getElementById('sapa-chat-input');
-        var sendBtn  = document.getElementById('sapa-chat-send');
-        var messages = document.getElementById('sapa-chat-messages');
-        var dot      = document.getElementById('sapa-chat-dot');
-        var status   = document.getElementById('sapa-chat-status');
+        var bubble         = document.getElementById('sapa-chat-bubble');
+        var chatWin        = document.getElementById('sapa-chat-window');
+        var closeBtn       = document.getElementById('sapa-chat-close');
+        var input          = document.getElementById('sapa-chat-input');
+        var sendBtn        = document.getElementById('sapa-chat-send');
+        var messages       = document.getElementById('sapa-chat-messages');
+        var dot            = document.getElementById('sapa-chat-dot');
+        var status         = document.getElementById('sapa-chat-status');
+        var reportIndicator = document.getElementById('sapa-report-indicator');
+        var cancelReportBtn = document.getElementById('sapa-cancel-report');
+
+        // Tampilkan / sembunyikan indicator mode laporan
+        function setReportMode(active) {
+            isInReportFlow = active;
+            if (active) {
+                reportIndicator.removeAttribute('hidden');
+                status.textContent = 'Mode Laporan';
+            } else {
+                reportIndicator.setAttribute('hidden', '');
+                status.textContent = 'Siap membantu';
+            }
+        }
 
         // Buka / tutup jendela chat
         function openChat() {
@@ -167,17 +231,25 @@
         bubble.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') toggleChat(); });
         closeBtn.addEventListener('click', closeChat);
 
+        // Klik tombol cancel report → kirim "batal"
+        cancelReportBtn.addEventListener('click', function () {
+            input.value = 'batal';
+            sendMessage();
+        });
+
         // Scroll ke pesan terakhir
         function scrollToBottom() {
             messages.scrollTop = messages.scrollHeight;
         }
 
-        // Format teks balasan (escape HTML & dukung bold markdown)
+        // Format teks balasan (escape HTML & dukung bold/italic markdown)
         function formatReplyText(str) {
             if (!str) return '';
             var safe = str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
             // Format **teks** menjadi <b>teks</b>
             safe = safe.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            // Format _teks_ menjadi <i>teks</i>
+            safe = safe.replace(/_(.*?)_/g, '<i>$1</i>');
             // Format line breaks
             safe = safe.replace(/\n/g, '<br>');
             return safe;
@@ -243,6 +315,21 @@
             return 'Maaf, tidak dapat mengambil jawaban dari SAPA AI.';
         }
 
+        // Update report mode berdasarkan response source
+        function handleResponseSource(data) {
+            if (data.source === 'report_flow') {
+                // Cek apakah laporan selesai atau dibatalkan
+                var reply = (data.reply || '').toLowerCase();
+                if (reply.indexOf('laporan berhasil dikirim') !== -1 ||
+                    reply.indexOf('laporan dibatalkan') !== -1 ||
+                    reply.indexOf('sesi telah direset') !== -1) {
+                    setReportMode(false);
+                } else {
+                    setReportMode(true);
+                }
+            }
+        }
+
         // Kirim pesan ke Backend Proxy (atau Direct Fetch ke Langflow)
         function sendMessage() {
             var text = input.value.trim();
@@ -280,9 +367,10 @@
             })
             .then(function (data) {
                 removeTyping();
+                handleResponseSource(data);
                 var reply = parseLangflowResponse(data);
                 appendMessage('bot', formatReplyText(reply));
-                status.textContent = 'Siap membantu';
+                if (!isInReportFlow) status.textContent = 'Siap membantu';
                 if (!chatWin.classList.contains('is-open')) dot.removeAttribute('hidden');
             })
             .catch(function (err) {
